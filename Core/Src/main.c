@@ -5,13 +5,11 @@
 void SystemClock_Config(void);
 void seven_seg_gpio_init(void);
 
+volatile uint8_t temp;
+
 TaskHandle_t seven_seg_pointer;
 TaskHandle_t temp_sensor_pointer;
 TaskHandle_t pwm_contoller_pointer;
-
-// Using common anode segments
-uint8_t seg_vals[7] = {0B11000000, 0B11111001, 0B10100100, 0B10110000, 0B10011001,
-				0B10010010, 0B10000010, 0B11111000, 0B10000000, 0B10011000};
 
 int main(void)
 {
@@ -48,6 +46,8 @@ void seven_seg_gpio_init(void) {
 	init.Pin = GPIO_PIN_0 | GPIO_PIN_1 | GPIO_PIN_2 | GPIO_PIN_3 | GPIO_PIN_4 | GPIO_PIN_5 | GPIO_PIN_6;
 
 	HAL_GPIO_Init(GPIOD, &init);
+
+	// GPIOA for controlling
 }
 
 void SystemClock_Config(void)
