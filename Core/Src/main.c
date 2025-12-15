@@ -3,9 +3,7 @@
 #include "task.h"
 
 void SystemClock_Config(void);
-
-void temp_sensor_handler(void * const pvParameters);
-void pwm_controller_handler(void * const pvParameters);
+void seven_seg_gpio_init(void);
 
 TaskHandle_t seven_seg_pointer;
 TaskHandle_t temp_sensor_pointer;
@@ -19,6 +17,8 @@ int main(void)
 {
     HAL_Init();
     SystemClock_Config();
+
+    seven_seg_gpio_init();
 
     BaseType_t status;
 
@@ -37,6 +37,18 @@ int main(void)
     }
 }
 
+void seven_seg_gpio_init(void) {
+	__HAL_RCC_GPIOD_CLK_ENABLE();
+
+	GPIO_InitTypeDef init = {0};
+
+	// GPIOD[0:6] connected to the two seven segments
+	init.Mode = GPIO_MODE_OUTPUT_PP;
+	init.Speed = GPIO_SPEED_HIGH;
+	init.Pin = GPIO_PIN_0 | GPIO_PIN_1 | GPIO_PIN_2 | GPIO_PIN_3 | GPIO_PIN_4 | GPIO_PIN_5 | GPIO_PIN_6;
+
+	HAL_GPIO_Init(GPIOD, &init);
+}
 
 void SystemClock_Config(void)
 {

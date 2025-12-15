@@ -1,13 +1,6 @@
-/*
- * temp-sensor-task.h
- *
- *  Created on: Dec 15, 2025
- *      Author: moath
- */
-
 #ifndef INC_TEMP_SENSOR_TASK_H_
 #define INC_TEMP_SENSOR_TASK_H_
 
+void temp_sensor_handler(void * const pvParameters);
 
-
-#endif /* INC_TEMP_SENSOR_TASK_H_ */
+#endif
