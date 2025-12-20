@@ -1,11 +1,17 @@
 #include "main.h"
 #include "FreeRTOS.h"
 #include "task.h"
+#include "seven-seg-task.h"
+#include "pwm-controller-task.h"
+#include "temp-sensor-task.h"
 
 void SystemClock_Config(void);
 void seven_seg_gpio_init(void);
+void pwm_init(void);
+void ADC_init(void);
 
-volatile uint8_t temp;
+volatile uint16_t temp;
+volatile uint16_t adc_raw_temp;
 
 TaskHandle_t seven_seg_pointer;
 TaskHandle_t temp_sensor_pointer;
@@ -17,6 +23,7 @@ int main(void)
     SystemClock_Config();
 
     seven_seg_gpio_init();
+    pwm_init();
 
     BaseType_t status;
 
@@ -47,7 +54,37 @@ void seven_seg_gpio_init(void) {
 
 	HAL_GPIO_Init(GPIOD, &init);
 
-	// GPIOA for controlling
+	// GPIOA for controlling the segment
+	__HAL_RCC_GPIOA_CLK_ENABLE();
+
+	init.Pin = GPIO_PIN_0 | GPIO_PIN_1;
+
+	HAL_GPIO_Init(GPIOA, &init);
+}
+
+void pwm_init(void) {
+	RCC->APB1ENR |= RCC_APB1ENR_TIM2EN;
+
+	// 10KHz PWM, ARR = 160, FREQ = 16MHz and pre-scale = 0, using TIM2 CHA2(PA15)
+	TIM2->CCER |= TIM_CCER_CC2E;
+	TIM2->CCMR1 &= ~(7 << 12);
+	// OC2M = 110 (PWM mode 1)
+	TIM2->CCMR1 |=  (6 << 12);
+	TIM2->CCMR1 |=  TIM_CCMR1_OC2PE;
+	// Motor off initially
+	TIM2->CCR2 = 0;
+
+	TIM2->PSC = 0;
+	TIM2->ARR = 1599;
+
+	GPIO_InitTypeDef init = {0};
+	init.Pin = GPIO_PIN_15;
+	init.Mode = GPIO_MODE_AF_PP;
+	init.Alternate = GPIO_AF1_TIM2;
+
+	HAL_GPIO_Init(GPIOA, &init);
+
+	TIM2->CR1 |= TIM_CR1_CEN;
 }
 
 void SystemClock_Config(void)
@@ -76,6 +113,16 @@ void SystemClock_Config(void)
 	{
 	Error_Handler();
 	}
+}
+
+void ADC_IRQHandler(void) {
+	BaseType_t xHigherPriorityTaskWoken = pdFALSE;
+
+	adc_raw_temp = ADC1->DR;
+
+	vTaskNotifyGiveFromISR(temp_sensor_pointer, &xHigherPriorityTaskWoken);
+
+	portYIELD_FROM_ISR( xHigherPriorityTaskWoken );
 }
 
 void Error_Handler(void)
