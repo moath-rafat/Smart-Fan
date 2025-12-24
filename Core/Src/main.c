@@ -77,12 +77,13 @@ void pwm_init(void) {
 	TIM2->PSC = 0;
 	TIM2->ARR = 1599;
 
+	__HAL_RCC_GPIOE_CLK_ENABLE();
 	GPIO_InitTypeDef init = {0};
-	init.Pin = GPIO_PIN_15;
+	init.Pin = GPIO_PIN_3;
 	init.Mode = GPIO_MODE_AF_PP;
 	init.Alternate = GPIO_AF1_TIM2;
 
-	HAL_GPIO_Init(GPIOA, &init);
+	HAL_GPIO_Init(GPIOE, &init);
 
 	TIM2->CR1 |= TIM_CR1_CEN;
 }

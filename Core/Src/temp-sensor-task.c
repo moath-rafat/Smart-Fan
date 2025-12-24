@@ -3,6 +3,8 @@
 extern volatile uint16_t temp;
 extern volatile uint16_t adc_raw_temp;
 
+void ADC_init(void);
+
 void temp_sensor_handler(void * const pvParameters) {
 	ADC_init();
 
