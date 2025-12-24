@@ -54,7 +54,7 @@ The fan speed is controlled linearly based on temperature:
 | Temperature | Fan Duty |
 |-------------|----------|
 | < 25 °C     | 0% (OFF) |
-| 25–40 °C   | Linear ramp (0 → 100%) |
+| 25–40 °C   | (0 → 100%) |
 | > 40 °C    | 100% (MAX) |
 
 ### PWM Formula
