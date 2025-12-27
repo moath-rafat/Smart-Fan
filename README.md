@@ -6,19 +6,16 @@ The system periodically samples the **internal temperature sensor**, displays th
 
 ---
 
-## ✨ Features
+## Features
 
 - STM32F407 internal temperature sensor
-- ADC triggered every **10 ms** using **TIM3 TRGO**
 - FreeRTOS task-based architecture
-- Interrupt-driven ADC with task notification
-- Linear PWM fan speed control
+- PWM fan speed control
 - Dual 7-segment temperature display
-- Fully register-level peripheral configuration (no HAL drivers)
 
 ---
 
-## 🧠 System Overview
+## System Overview
 
 ### Temperature Sampling
 - ADC1 samples **channel 16** (internal temperature sensor)
@@ -37,26 +34,9 @@ The system periodically samples the **internal temperature sensor**, displays th
 
 ---
 
-## 🧩 Task Architecture
-
-| Task Name            | Priority | Function |
-|---------------------|----------|----------|
-| `seven_seg_handler` | 1        | Display temperature |
-| `temp_sensor_handler` | 2      | ADC conversion & temperature calculation |
-| `pwm_controller_handler` | 3   | Fan speed control |
-
----
-
-## 🔁 Fan Control Logic
+## Fan Control Logic
 
 The fan speed is controlled linearly based on temperature:
 
-| Temperature | Fan Duty |
-|-------------|----------|
-| < 25 °C     | 0% (OFF) |
-| 25–40 °C   | (0 → 100%) |
-| > 40 °C    | 100% (MAX) |
-
-### PWM Formula
-```c
+25C -> 0%, 40C -> 100%  
 duty = ((temp - 25) * ARR) / (40 - 25);
