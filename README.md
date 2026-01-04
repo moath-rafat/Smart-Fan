@@ -1,4 +1,4 @@
-# STM32F407 Board Cooler Fan Controller (FreeRTOS)
+# STM32F407 Board Cooler Fan Controller
 
 This project implements a **board temperature–based cooling fan controller** using an **STM32F407** microcontroller and **FreeRTOS**.
 
